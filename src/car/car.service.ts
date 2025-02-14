@@ -10,34 +10,44 @@ export class CarService {
   }
 
   public postCar(car) {
-    return this.cars.push(car);
-  }
-
-  public getCarById(id: number) {
-    const car = this.cars.find((val) => val.id === id);
-    if (car) {
-      throw new HttpException('Not Found', 404);
-    }
-    return car;
-  }
-
-  public deleteCarById(id: number) {
-    const index = this.cars.findIndex((val) => val.id === id);
-    if (index < 0) {
-      throw new HttpException('Not Found', 404);
-    }
-
-    this.cars.filter((val) => val.id !== id);
+    this.cars = [...this.cars, car];
     return this.cars;
+  }
+
+  public getCarById(id: number): Promise<any> {
+    const carId = Number(id);
+    return new Promise((resolve) => {
+      const car = this.cars.find((val) => val.id === carId);
+      if (!car) {
+        throw new HttpException('Not Found', 404);
+      }
+      return resolve(car);
+    });
+  }
+
+  public deleteCarById(id: number): Promise<any> {
+    const carId = Number(id);
+    return new Promise((resolve) => {
+      const index = this.cars.findIndex((val) => val.id === carId);
+      if (index < 0) {
+        throw new HttpException('Not Found', 404);
+      }
+
+      this.cars = this.cars.filter((val) => val.id !== carId);
+      return resolve(this.cars);
+    });
   }
 
   public putCarById(id: number, propertyName: string, propertyValue: string) {
-    const index = this.cars.findIndex((val) => val.id === id);
-    if (id < 0) {
-      throw new HttpException('Not Found', 404);
-    }
+    const carId = Number(id);
+    return new Promise((resolve) => {
+      const index = this.cars.findIndex((val) => val.id === carId);
+      if (index < 0) {
+        throw new HttpException('Not Found', 404);
+      }
 
-    this.cars[index][propertyName] = propertyValue;
-    return this.cars;
+      this.cars[index][propertyName] = propertyValue;
+      return resolve(this.cars[index]);
+    });
   }
 }
